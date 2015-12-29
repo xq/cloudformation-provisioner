@@ -14,7 +14,7 @@ sure the following prerequisities are satifised:
 
   aws-sdk-resources
 
-- credentials.json has been obtained from HR and placed in the
+- The credentials file (credentials.json) has been obtained from HR and placed in the
   root directory of this project
 
 - Once the above requirements have been satisfied, run the following
@@ -30,7 +30,7 @@ and when the web application is up and running for you to view.
 The repository also contains a suite of tests to verify that the provisioner
 works properly. To run them, make sure the following gem is installed and up to date:
 
-- rspec
+  rspec
 
 To run the tests, navigate to the projects root directory and enter the following:
 
