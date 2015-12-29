@@ -7,16 +7,17 @@ class StackBuilder
 	
 	attr_accessor :server_template, :client, :stack, :stack_name
 
-	CONFIG = JSON.load(File.read('configuration.json'), nil, symbolize_names: true)
-	CREDENTIALS = JSON.load(File.read('credentials.json'))
 	CREATION_WAIT_TIME = 5*60
 
-	def initialize(template_filename)
-		Aws.config[:credentials] = Aws::Credentials.new(CREDENTIALS['access_key'], CREDENTIALS['secret_key'])
-		Aws.config[:region] = CONFIG[:region]
-		@server_template = read_template(template_filename)
+	def initialize(settings)
+		credentials = JSON.load(File.read(settings[:credentials_filename])) 
+		config = JSON.load(File.read(settings[:config_filename]), nil, symbolize_names: true)
+		@server_template = read_template(settings[:template_filename])
+		prefix = settings[:server_prefix]
+		Aws.config[:credentials] = Aws::Credentials.new(credentials['access_key'], credentials['secret_key'])
+		Aws.config[:region] = config[:region]
 		@client = Aws::CloudFormation::Client.new
-		@stack_name = "webserver-" + Digest::MD5.hexdigest(Time.now.to_s)
+		@stack_name = "#{config[:server_prefix]}-#{Digest::MD5.hexdigest(Time.now.to_s)}"
 	end
 
 	def build_stack
@@ -36,6 +37,11 @@ class StackBuilder
 			end
 		end
 		@stack = Aws::CloudFormation::Stack.new stack_id
+		true
+	end
+
+	def delete_stack
+		@client.delete_stack({ stack_name: @stack_name })
 	end
 
 	def print_stack_output
