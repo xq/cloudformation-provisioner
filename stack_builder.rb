@@ -5,19 +5,22 @@ require 'digest'
 
 class StackBuilder
 	
-	attr_accessor :server_template, :client, :stack, :stack_name
+	attr_accessor :server_template, :client, :stack, :stack_name, :config, :credentials
 
 	CREATION_WAIT_TIME = 5*60
 
+	def load_settings(settings)
+		@credentials = JSON.load(File.read(settings[:credentials_filename])) 
+		@config = JSON.load(File.read(settings[:config_filename]), nil, symbolize_names: true)
+	end
+
 	def initialize(settings)
-		credentials = JSON.load(File.read(settings[:credentials_filename])) 
-		config = JSON.load(File.read(settings[:config_filename]), nil, symbolize_names: true)
-		@server_template = read_template(settings[:template_filename])
-		prefix = settings[:server_prefix]
-		Aws.config[:credentials] = Aws::Credentials.new(credentials['access_key'], credentials['secret_key'])
-		Aws.config[:region] = config[:region]
+		load_settings(settings)
+		@server_template = read_template(@config[:template_filename])
+		Aws.config[:credentials] = Aws::Credentials.new(@credentials['access_key'], @credentials['secret_key'])
+		Aws.config[:region] = @config[:region]
 		@client = Aws::CloudFormation::Client.new
-		@stack_name = "#{config[:server_prefix]}-#{Digest::MD5.hexdigest(Time.now.to_s)}"
+		@stack_name = "#{@config[:server_prefix]}-#{Digest::MD5.hexdigest(Time.now.to_s)}"
 	end
 
 	def build_stack
@@ -27,7 +30,13 @@ class StackBuilder
 			on_failure: "DELETE"
 		}).stack_id
 		stack_create_time = Time.now
-		stack_result = @client.wait_until(:stack_create_complete, {stack_name: @stack_name}) do |w|
+		wait_for_stack_completion(stack_create_time)
+		@stack = Aws::CloudFormation::Stack.new stack_id
+		true
+	end
+
+	def wait_for_stack_completion(stack_create_time)
+		@client.wait_until(:stack_create_complete, {stack_name: @stack_name}) do |w|
 			w.max_attempts = nil
 			w.before_wait do |attempts, response|
 				puts "Creation status check.. Creation still in progress"
@@ -36,8 +45,6 @@ class StackBuilder
 				end
 			end
 		end
-		@stack = Aws::CloudFormation::Stack.new stack_id
-		true
 	end
 
 	def delete_stack

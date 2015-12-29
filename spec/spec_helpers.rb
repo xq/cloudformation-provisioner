@@ -1,5 +1,4 @@
 require 'timeout'
-require 'open-uri'
 require 'socket'
 
 module SpecHelpers
