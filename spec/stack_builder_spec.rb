@@ -1,6 +1,6 @@
 require 'open-uri'
-require './spec_helpers.rb'
-require '../stack_builder.rb'
+require_relative 'spec_helpers.rb'
+require_relative '../stack_builder.rb'
 
 include SpecHelpers
 
