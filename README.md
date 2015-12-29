@@ -20,7 +20,7 @@ sure the following prerequisities are satifised:
 - Once the above requirements have been satisfied, run the following
   command from the projects root directory:
 
-  ruby stack_builder_interface.rb
+  `ruby stack_builder_interface.rb`
 
 The provisioner will then run, notifying when the stack has been created
 and when the web application is up and running for you to view.
@@ -34,8 +34,9 @@ works properly. To run them, make sure the following gem is installed and up to 
 
 To run the tests, from the projects root directory follow these steps:
 
-- cd spec
-- rspec stack_builder_spec.rb
+  `cd spec`
+
+  `rspec stack_builder_spec.rb`
 
 The tests will then go through the process of provisioning a test stack,
 verifying that it runs and is accessible, and finally deleting it.
