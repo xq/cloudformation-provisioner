@@ -10,7 +10,7 @@ describe StackBuilder do
 		@stack_builder = StackBuilder.new({ credentials_filename: '../credentials.json',
 																				config_filename: 'test_configuration.json',
 																				template_filename: '../serverTemplate.json' })
-		puts "Running StackBuilder tests. Note that a stack will be built before tests are run,"\
+		puts "Running StackBuilder test suite.\nNote that a stack will be built before tests are run,"\
 	  " and deleted once they are finished."
 	end
 
@@ -27,10 +27,10 @@ describe StackBuilder do
 
 	it "tests that the servers SSH and HTTP ports are reachable" do
 		ip = format_output_ip(@stack_builder.print_stack_output)
-		puts "Waiting for SSH port to come online.."
+		puts "\nWaiting for SSH port to come online.."
 		poll_port(ip, 22, "SSH", 5)
 		expect(open_port?(ip, 22)).to be true
-		puts "Waiting for http port to come online.."
+		puts "Waiting for HTTP port to come online.."
 		poll_port(ip, 80, "HTTP", 5)
 		expect(open_port?(ip, 80)).to be true
 	end
