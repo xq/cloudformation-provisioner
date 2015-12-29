@@ -28,11 +28,13 @@ and when the web application is up and running for you to view.
 ## Tests
 
 The repository also contains a suite of tests to verify that the provisioner
-works properly. To run them, make sure the following gem is installed and up to date:
+works properly.
+
+- To run them, make sure the following gem is installed and up to date:
 
   rspec
 
-To run the tests, navigate to the projects root directory and enter the following:
+- To run the tests, navigate to the projects root directory and enter the following:
 
   `cd spec`
 
