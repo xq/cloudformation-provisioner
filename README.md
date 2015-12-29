@@ -9,8 +9,9 @@ sure the following prerequisities are satifised:
 - ruby 2.0.0p645 or higher is installed on your system
 
 - The following gems are installed and are up to date:
-  aws-sdk-core
-  aws-sdk-resources
+aws-sdk-core
+
+aws-sdk-resources
 
 - credentials.json has been obtained from HR and placed in the
   root directory of this project
@@ -26,7 +27,7 @@ and when the web application is up and running for you to view.
 ## Tests
 
 The repository also contains a suite of tests to verify that the provisioner
-works properly. To run it, make sure the following gem is installed and up to date:
+works properly. To run them, make sure the following gem is installed and up to date:
 
 - rspec
 
