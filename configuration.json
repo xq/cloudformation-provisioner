@@ -1,0 +1,6 @@
+{
+	"size": "t1.micro",
+	"ami": "ami-7b386c11",
+  "region": "us-east-1",
+	"dry_run": false
+}

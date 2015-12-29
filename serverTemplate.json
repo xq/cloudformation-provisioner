@@ -1,0 +1,179 @@
+{
+  "Resources" : {
+		"webServerVPC": {
+			"Type": "AWS::EC2::VPC",
+			"Properties": {
+				"CidrBlock": "10.0.0.0/16",
+				"EnableDnsSupport": true,
+				"EnableDnsHostnames": true,
+				"InstanceTenancy": "default"
+			}
+		},
+		"webServerSubnet" : {
+		  "Type" : "AWS::EC2::Subnet",
+			"Properties" : {
+				"CidrBlock": "10.0.0.0/16",
+				"VpcId" : { "Ref" : "webServerVPC" }
+		  }
+		},
+		"webServerSubnetRouteAssociation" : {
+			 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+			 "Properties" : {
+					"RouteTableId" : { "Ref" : "webServerRouteTable" },
+					"SubnetId" : { "Ref" : "webServerSubnet" }
+			 }
+		},
+		"webServerSecurityGroup" : {
+			"Type" : "AWS::EC2::SecurityGroup",
+			"Properties" : {
+				"GroupDescription" : "Security group enabling web requests and SSH connections",
+				"VpcId" : { "Ref" : "webServerVPC" },
+				 "SecurityGroupIngress" : [
+						 {
+								"IpProtocol" : "tcp",
+								"FromPort" : "22",
+								"ToPort" : "22",
+								"CidrIp": "0.0.0.0/0"
+						 },
+						 {
+								"IpProtocol" : "tcp",
+								"FromPort" : "80",
+								"ToPort" : "80",
+								"CidrIp": "0.0.0.0/0"
+						 }
+				 ]
+			}
+		},
+		"webServerRouteTable" : {
+			"Type" : "AWS::EC2::RouteTable",
+			"Properties" : {
+				"VpcId" : { "Ref" : "webServerVPC" }
+			}
+		},
+		"webServerRoute" : {
+			"Type" : "AWS::EC2::Route",
+			"Properties" : {
+				"DestinationCidrBlock": "0.0.0.0/0",
+				"RouteTableId": { "Ref": "webServerRouteTable" },        
+				"GatewayId": { "Ref": "webServerInternetGateway" }
+			},
+			"DependsOn" : "webServerGatewayAttachment"
+		},
+		"webServerGatewayAttachment" : {
+			"Type" : "AWS::EC2::VPCGatewayAttachment",
+			"Properties" : {
+				"InternetGatewayId" : { "Ref": "webServerInternetGateway" },
+				"VpcId" : { "Ref" : "webServerVPC" }
+			}
+		},
+		"webServerInternetGateway" : {
+			"Type" : "AWS::EC2::InternetGateway",
+			"Properties" : { }
+		},
+    "webServerInstance" : {
+      "Type" : "AWS::EC2::Instance",
+			"DependsOn" : "webServerRoute",
+			"Metadata" : {
+				"AWS::CloudFormation::Init" : {
+					"configSets" : {
+						"All" : [ "ConfigureWebApp" ]
+					},
+					"ConfigureWebApp" : {
+						"packages" : {
+							"yum" : {
+								"httpd" : []
+							}
+						},
+						"files" : {
+							"/var/www/html/index.html" : {
+								"content" : { "Fn::Join" : ["\n", [
+									"<h1>Automation for the People</h1>"
+								]]},
+								"mode"    : "000644",
+								"owner"   : "root",
+								"group"   : "root"
+							}
+						},
+						"services" : {
+							"sysvinit" : {
+								"httpd"    : { "enabled" : "true", "ensureRunning" : "true" }
+							}
+						}
+					}
+				}
+			},
+      "Properties" : {
+				"InstanceType" : "t2.micro",
+        "ImageId" : "ami-60b6c60a",
+        "NetworkInterfaces": [
+          {
+            "GroupSet": [
+              {
+                "Ref": "webServerSecurityGroup"
+              }
+            ],
+            "AssociatePublicIpAddress": "true",
+            "DeviceIndex": "0",
+            "DeleteOnTermination": "true",
+            "SubnetId": {
+              "Ref": "webServerSubnet"
+            }
+          }
+        ],
+				"UserData": {
+					"Fn::Base64": {
+						"Fn::Join": [
+							"",
+							[
+								"#!/bin/bash -xe\n",
+								"yum update -y aws-cfn-bootstrap\n",
+								"# Install the files and packages from the metadata\n",
+								"/opt/aws/bin/cfn-init -v ",
+								"         --stack ",
+								{
+									"Ref": "AWS::StackName"
+								},
+								"         --resource webServerInstance ",
+								"         --configsets All ",
+								"         --region ",
+								{
+									"Ref": "AWS::Region"
+								},
+								"\n",
+								"# Signal the status from cfn-init\n",
+								"/opt/aws/bin/cfn-signal -e $? ",
+								"         --stack ",
+								{
+									"Ref": "AWS::StackName"
+								},
+								"         --resource webServerInstance ",
+								"         --region ",
+								{
+									"Ref": "AWS::Region"
+								},
+								"\n"
+							]
+						]
+					}
+				}
+      }
+    }
+  },
+	"Outputs" : {
+		"URL": {
+			"Value": {
+				"Fn::Join": [ "",
+					[ "http://",
+						{
+							"Fn::GetAtt": [
+								"webServerInstance",
+								"PublicIp"
+							]
+						}
+					]
+				]
+			},
+			"Description": "Web URL for the newly created application server"
+		}
+	}
+}
