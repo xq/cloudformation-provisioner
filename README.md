@@ -9,9 +9,10 @@ sure the following prerequisities are satifised:
 - ruby 2.0.0p645 or higher is installed on your system
 
 - The following gems are installed and are up to date:
-aws-sdk-core
 
-aws-sdk-resources
+  aws-sdk-core
+
+  aws-sdk-resources
 
 - credentials.json has been obtained from HR and placed in the
   root directory of this project
