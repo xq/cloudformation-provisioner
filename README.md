@@ -32,11 +32,11 @@ works properly. To run them, make sure the following gem is installed and up to 
 
 - rspec
 
-To run the tests, from the projects root directory follow these steps:
+To run the tests, navigate to the projects root directory and enter the following:
 
   `cd spec`
 
   `rspec stack_builder_spec.rb`
 
 The tests will then go through the process of provisioning a test stack,
-verifying that it runs and is accessible, and finally deleting it.
+verifying that it runs and is accessible, and finishes by deleting it.
