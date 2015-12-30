@@ -11,6 +11,7 @@ class StackBuilderInterface
 
 	HTTP_OK_CODE = "200"
 	TEMPLATE_FILENAME = 'serverTemplate.json'
+	APP_POLL_INTERVAL = 5
 
 	# Instantiate stack building object
 	def initialize(settings)
@@ -33,8 +34,8 @@ class StackBuilderInterface
 
 	# Checks whether the web application is online after a brief interval
 	def poll_application_status(url)
-		puts "Web application still initializing.. Waiting 5 seconds before checking again" 
-		sleep(5)
+		puts "Web application still initializing.. Waiting #{APP_POLL_INTERVAL} seconds before checking again" 
+		sleep(APP_POLL_INTERVAL)
 		application_online?(url)
 	end
 
