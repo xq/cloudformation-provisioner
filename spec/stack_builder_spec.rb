@@ -11,7 +11,7 @@ describe StackBuilder do
 		@stack_builder = StackBuilder.new({ credentials_filename: '../credentials.json',
 																				config_filename: 'test_configuration.json' })
 		puts "Running StackBuilder test suite.\nNote that a stack will be built before tests are run,"\
-	  " and deleted once they are finished."
+		" and deleted once they are finished."
 	end
 
 	# Delete the stack

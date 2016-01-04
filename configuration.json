@@ -1,5 +1,5 @@
 {
-  "region": "us-east-1",
+	"region": "us-east-1",
 	"server_prefix": "webserver",
 	"template_filename": "serverTemplate.json"
 }

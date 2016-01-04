@@ -19,7 +19,7 @@ class StackBuilderInterface
 	end
 
 	# Checks whether the web application has been brought online, if not, it will
-  # begin polling until it finds it
+	# begin polling until it finds it
 	def application_online?(url)
 		puts "Checking to see if web application is online.."
 		url_string = "#{url}/"
