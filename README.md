@@ -14,7 +14,7 @@ sure the following prerequisities are satifised:
 
   aws-sdk-resources
 
-- The credentials file (credentials.json) has been obtained from HR and placed in the
+- A credentials file (credentials.json) containing the access key and secret key placed in the
   root directory of this project
 
 - Once the above requirements have been satisfied, run the following
